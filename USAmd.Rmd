@@ -18,27 +18,32 @@ output:
 
 ```{r library, message = FALSE, echo=FALSE}
 library(jsonlite)
+library(knitr)
 library(dplyr)
 library(ggplot2)
 library(rbokeh)
 library(leaflet)
 library(RColorBrewer)
 library(raster)
+library(kableExtra)
 ```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Tutorial de *REGEX* - Opinión
+## Tutoriales 
+
+# REGEX
 
 <div style="text-align: justify">Una expresión regular, regex o regexp (a veces llamada expresión racional) es una secuencia de caracteres que definen un patrón de búsqueda. Por lo general, dichos patrones son utilizados por los algoritmos de búsqueda de cadenas para las operaciones "buscar" o "buscar y reemplazar" en las cadenas, o para la validación de entrada. Es una técnica desarrollada en informática teórica y teoría del lenguaje formal.
 
 El concepto surgió en la década de 1950 cuando el matemático estadounidense Stephen Cole Kleene formalizó la descripción de un lenguaje regular. El concepto entró en uso común con las utilidades de procesamiento de texto de Unix. Existen diferentes sintaxis para escribir expresiones regulares desde la década de 1980, una es el estándar POSIX y otra, ampliamente utilizada, la sintaxis de Perl.[^1]<div/>
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# MARKDOWN
+<div style="text-align: justify">Markdown es un lenguaje de marcado ligero con sintaxis de formato de texto sin formato. Su diseño le permite convertirse a muchos formatos de salida, pero la herramienta original con el mismo nombre solo admite HTML. Markdown se usa a menudo para formatear archivos Léame, para escribir mensajes en foros de discusión en línea y para crear texto enriquecido utilizando un editor de texto sin formato.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Dado que la descripción inicial de Markdown contenía ambigüedades y preguntas sin respuesta, las implementaciones que aparecieron a lo largo de los años tienen diferencias sutiles y muchas vienen con extensiones de sintaxis.[^2]<div/>
 
 # Sobre Estados Unidos
 
@@ -91,6 +96,12 @@ map
 
 ```
 
+```{r tabla_div,echo=FALSE, fig.align="center"}
+knitr::kable(tab_usa_total_div) %>%
+  kable_styling() %>%
+  scroll_box(width = "500px", height = "200px")
+```
+
 ## Including Plots
 
 You can also embed plots, for example:
@@ -102,3 +113,4 @@ plot(pressure)
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 [^1]: Ruslan Mitkov (2003). The Oxford Handbook of Computational Linguistics. Oxford University Press. p. 754.
+[^2]: "Markdown". 2013-12-04. Archived from the original on 2004-04-02
