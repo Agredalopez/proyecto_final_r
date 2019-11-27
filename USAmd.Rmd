@@ -32,15 +32,15 @@ library(kableExtra)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Tutoriales 
+# Tutoriales 
 
-# REGEX
+## REGEX
 
 <div style="text-align: justify">Una expresión regular, regex o regexp (a veces llamada expresión racional) es una secuencia de caracteres que definen un patrón de búsqueda. Por lo general, dichos patrones son utilizados por los algoritmos de búsqueda de cadenas para las operaciones "buscar" o "buscar y reemplazar" en las cadenas, o para la validación de entrada. Es una técnica desarrollada en informática teórica y teoría del lenguaje formal.
 
 El concepto surgió en la década de 1950 cuando el matemático estadounidense Stephen Cole Kleene formalizó la descripción de un lenguaje regular. El concepto entró en uso común con las utilidades de procesamiento de texto de Unix. Existen diferentes sintaxis para escribir expresiones regulares desde la década de 1980, una es el estándar POSIX y otra, ampliamente utilizada, la sintaxis de Perl.[^1]<div/>
 
-# MARKDOWN
+## MARKDOWN
 <div style="text-align: justify">Markdown es un lenguaje de marcado ligero con sintaxis de formato de texto sin formato. Su diseño le permite convertirse a muchos formatos de salida, pero la herramienta original con el mismo nombre solo admite HTML. Markdown se usa a menudo para formatear archivos Léame, para escribir mensajes en foros de discusión en línea y para crear texto enriquecido utilizando un editor de texto sin formato.
 
 Dado que la descripción inicial de Markdown contenía ambigüedades y preguntas sin respuesta, las implementaciones que aparecieron a lo largo de los años tienen diferencias sutiles y muchas vienen con extensiones de sintaxis.[^2]<div/>
@@ -96,10 +96,14 @@ map
 
 ```
 
+
 ```{r tabla_div,echo=FALSE, fig.align="center"}
-knitr::kable(tab_usa_total_div) %>%
+knitr::kable(tab_usa_total_div, caption = "**Tabla N° 1: Países e Indicadores**") %>%
   kable_styling() %>%
-  scroll_box(width = "500px", height = "200px")
+  row_spec(seq(1,20,by=4), bold = T, color = "white", background = "red") %>% 
+  scroll_box(width = "100%", height = "200px")
+  
+
 ```
 
 ## Including Plots
