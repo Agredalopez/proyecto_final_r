@@ -8,6 +8,7 @@ La idea de este documento es que sea una guía para hacer más llevadero el docu
 Para poder obtener el documento en formato html y no tener ningún inconviente en ello se requieren las siguientes librerías
 
 ```
+library(rmdformats)
 library(jsonlite)
 library(knitr)
 library(dplyr)
@@ -21,7 +22,18 @@ library(kableExtra)
 ```
 
 Parte de la información proporcionado en el documento final al que respalda este archivo estará fundamentada en cálculos con los códigos que se muestren aquí.
+## Gráfica
 
+```
+q<-ggplot(data = tab_usa_total) +
+  geom_point(mapping = aes(x = pop/1000  , y = density, color=division)) +
+  theme (axis.text.x = element_text(angle=90)) +
+  facet_wrap(year_id~.)+
+  scale_color_brewer(palette = "Dark2")+
+  labs(x="Población en miles",
+       y="Densidad por km2")
+
+``` 
 ##Análisis Agregado
 
 ```url<-"https://datausa.io/api/data?drilldowns=State&measures=Population"
@@ -70,4 +82,22 @@ tab_2017<-tab_usa_total %>% filter(year_id==2017) %>%
   summarize(pop_mean=mean(pop),pop_median=median(pop),pop_agg=sum(pop),area_agg=sum(area_kms))%>%
   mutate(densi_agg=pop_agg/area_agg)
   
+```
+```
+url_inc<-"http://datausa.io/api/data?Geography=01000US:children&measure=Household Income by Race,Household Income by Race Moe&drilldowns=Race"
+income <- readLines(url_inc)
+income_usa <- jsonlite::fromJSON(income)[[1]]
+income_usa
+str(income_usa)
+income_usa_tot<-income_usa[c(1:2,4:5,7:8)]
+income_usa_tot
+tmp_names<-c("id_race","race","state","id_year","inc_median_house","moe_inc_med")
+colnames(income_usa_tot)<-tmp_names
+income_td<-income_usa_tot %>% arrange(desc(inc_median_house)) %>% filter(id_year==2017, race=="Total", state!="Puerto Rico")
+income_td
+income_td<-income_td[c(1:5,47:51),]
+
+income_agrup<-income_usa_tot %>%filter(id_year==2017) %>%  group_by(race, id_year) %>% summarise(income_mean=mean(inc_median_house)) %>% 
+  arrange(desc(id_year),desc(income_mean))%>% ungroup()
+income_agrup
 ```
