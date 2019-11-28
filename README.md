@@ -13,7 +13,6 @@ library(jsonlite)
 library(knitr)
 library(dplyr)
 library(ggplot2)
-library(rbokeh)
 library(leaflet)
 library(plotly)
 library(RColorBrewer)
@@ -34,7 +33,7 @@ q<-ggplot(data = tab_usa_total) +
        y="Densidad por km2")
 
 ``` 
-##Análisis Agregado
+## Análisis Agregado
 
 ```url<-"https://datausa.io/api/data?drilldowns=State&measures=Population"
 usa <- readLines(url)

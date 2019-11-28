@@ -19,7 +19,6 @@ library(jsonlite)
 library(knitr)
 library(dplyr)
 library(ggplot2)
-library(rbokeh)
 library(leaflet)
 library(plotly)
 library(RColorBrewer)
@@ -120,7 +119,7 @@ map = leaflet() %>%
               weight = 2, 
               color = "green",
               popup = polygon_popup)%>% 
-  addControl("Estados Unidos",position = "topright",className = "map-title") %>% 
+  addControl("Estados Unidos",position = "topleft",className = "map-title") %>% 
   addMarkers(lng = -98.35, lat=39.7)
 
 map
@@ -160,17 +159,6 @@ p
 ```
 
 <div style="text-align: justify">Del gráfico anterior podemos sacar algunos datos interesantes (con base al último año disponible, 2017), como por ejemplo que si bien California es el estado con mayor población, su densidad poblacional por kilómetro cuadrado es de 39, poco más del promedio de EE.UU que está alrededor del 33 personas. En el otro extremo tenemos que New Jersey tiene la mayor densidad por kilómetro cuadrado de más de 440 personas, y con una población de 9 millones, adicionalmente se muestra que en general los estados del Noreste tienen una densidad promedio por encima del resto de zonas, visiblemente se pueden apreciar: Massachusetts, Rhode Island y Connecticut, todos por encima del 200 por kilómetro cuadrado.
-
-```{r q, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center',fig.width=8, fig.height=4}
-q<-ggplot(data = tab_usa_total) +
-  geom_point(mapping = aes(x = pop/1000  , y = density, color=division)) +
-  theme (axis.text.x = element_text(angle=90)) +
-  facet_wrap(year_id~.)+
-  scale_color_brewer(palette = "Dark2")+
-  labs(x="Población en miles",
-       y="Densidad por km2")
-
-``` 
 
 ### Dispersión de la densidad Zona, vista histórica
 
