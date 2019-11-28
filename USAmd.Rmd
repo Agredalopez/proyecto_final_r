@@ -9,14 +9,12 @@ output:
     code_folding: show
     thumbnails: true
     gallery: true
-    fig_width: 10
-    fig_height: 5
     lightbox : true 
     se_bookdown : true
     df_print: kable
 ---
 
-```{r library, message = FALSE, echo=FALSE}
+```{r library,echo=FALSE, message = FALSE}
 library(jsonlite)
 library(knitr)
 library(dplyr)
@@ -30,7 +28,7 @@ library(kableExtra)
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = T)
 ```
 
 # TUTORIAL  
@@ -41,7 +39,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 <div style="text-align: justify">El concepto surgió en la década de 1950 cuando el matemático estadounidense Stephen Cole Kleene formalizó la descripción de un lenguaje regular. El concepto entró en uso común con las utilidades de procesamiento de texto de Unix. Existen diferentes sintaxis para escribir expresiones regulares desde la década de 1980, una es el estándar POSIX y otra, ampliamente utilizada, la sintaxis de Perl.[^1]                                 
                                                                                                 
-<div style="text-align: justify">De lo navegado y encontrado, se puede citar incluso algunos vídeos bastante densos en términos de entendimiento profundo de lo que son las expresiones regulares, se pretende dar a conocer la preferencia en función a dos criterios: practicidad y detalle en explicación.                                                          
+<div style="text-align: justify">De lo navegado y encontrado, se puede citar incluso algunos vídeos bastante densos en términos de entendimiento profundo de lo que son las expresiones regulares, se pretende dar a conocer la preferencia en función a dos criterios: practicidad y detalle en explicación.  
+
+<div style="text-align: justify">Luego de haber buceado por diferentes páginas web, con el objetivo de mejorar la conceptualización de ciertos patrones y como interrelacionar éstos, se puede decir que la peor página tutorial fue [Regular-Expressions.info](https://www.regular-expressions.info/engine.html), resulta hasta molesta entrar a cada apartado y que te pidiendo donación, además de que poco explica acerca de patrones y sobre todo no muestra ejemplos claros sobre algunas situaciones particulares. Definitivamente no logré entender lo que trataba de indicar a pesar de que tiene una interminable cantidad de apartados.
+
+<div style="text-align: justify">Como se mencionaba al incio, los criterios a considerar eran practicidad y detalle, en efecto la página que se pasa a mencionar cubre largamente ambos criterios, en primer lugar tiene bastantes apartados, tratando así de cubrir todo tipo de patrones posibles, además de ir agregando combinaciones de los mismos (que es básicamente como uno lo tiene que aplicar en el mundo laboral), todo ello implica que vaya desde un nivel básico por cada patrón, hasta un término avanzado en tipos de patrones. La página descrita lleva el nombre de [RexEgg](https://www.rexegg.com/regex-capture.html).
                                                                                                 
 ## MARKDOWN  
 
@@ -125,18 +127,7 @@ knitr::kable(tab_usa_total_div) %>%
                                                                                                 
 <div style="text-align: justify">La tabla anterior muestra los estadísticos más relevantes acerca de la información tanto de densidad, área y población de EE.UU por zona geográfica (Noreste, Sur, Central-Norte y Este), entre los años 2013 y 2017.
                                                                                                 
-### Densidad Poblacional por Región
-                                                                                                
-```{r p, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
-p<-ggplot(data = tab_usa_total) +
-  geom_point(mapping = aes(x = region, y = density, color=division)) +
-  theme (axis.text.x = element_text(angle=90)) +
-  facet_wrap(year_id~.)+
-  scale_color_brewer(palette = "Dark2")
-p
-```
-                                                                                                
-### Densidad-Población - Por Zona
+### Relación Densidad-Población, por Zona
                                                                                                 
 ```{r q, echo=FALSE, warning=FALSE, message=FALSE}
 tab_2017<-(tab_usa_total) %>% filter(year_id==2017) %>% mutate(density=round(density,2))
@@ -145,9 +136,43 @@ q <- plot_ly(tab_2017,x = ~pop, y = ~density,
              color = ~division, colors="Dark2", size = ~density) %>% 
     layout(
          xaxis = list(title = "Población"),
-         yaxis = list(title = "Densidad")) 
+         yaxis = list(title = "Densidad por Km2")) 
 q
 ```
+
+<div style="text-align: justify">Del gráfico anterior podemos sacar algunos datos interesantes (con base al último año disponible, 2017), como por ejemplo que si bien California es el estado con mayor población, su densidad poblacional por kilómetro cuadrado es de 39, poco más del promedio de EE.UU que está alrededor del 33 personas. En el otro extremo tenemos que New Jersey tiene la mayor densidad por kilómetro cuadrado de más de 440 personas, y con una población de 9 millones, adicionalmente se muestra que en general los estados del Noreste tienen una densidad promedio por encima del resto de zonas, visiblemente se pueden apreciar: Massachusetts, Rhode Island y Connecticut, todos por encima del 200 por kilómetro cuadrado.
+
+### Densidad Poblacional por Zona, vista histórica
+
+```{r p, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center',fig.width=8, fig.height=4}
+p<-ggplot(data = tab_usa_total) +
+  geom_point(mapping = aes(x = pop/1000  , y = density, color=division)) +
+  theme (axis.text.x = element_text(angle=90)) +
+  facet_wrap(year_id~.)+
+  scale_color_brewer(palette = "Dark2")+
+  labs(x="Población en miles",
+       y="Densidad por km2")
+
+
+``` 
+
+### Dispersión de la densidad Zona, vista histórica
+
+```{r s, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center',fig.width=8, fig.height=4}
+
+
+s<-ggplot(data = tab_usa_total) +
+  geom_point(mapping = aes(x = year_id  , y = density, color=division)) +
+  theme (axis.text.x = element_text(angle=90)) +
+  facet_wrap(region~.)+
+  scale_color_brewer(palette = "Dark2")+
+  labs(x="Población en miles",
+       y="Densidad por km2")
+ 
+s
+```
                                                                                                 
+<div style="text-align: justify">los gráficos previos buscan dar a conocer que en los 5 años de muestra la situación ha sido muy similar en niveles de densidad, eso es entendible porque las poblaciones no cambian abruptamente en un periodo de tiempo tan corto, asimismo nos indica que la dispersión de la zona Noreste, si bien tiene la densidad más alta en términos promedios, existe mucha dispersión los estados que los conforman, de hecho está conformada por dos regiones que tienen comportamientos muy similares, tanto Midle Atlantic como New Englad están bastante polarizadas pero en torno a diferente media, es decir tienen un grupo de estados con densidad alta y otro con niveles bajo, no se encuentran valores cercanos a la media, esto hace que la varianza sea más alta incluso.
+
 [^1]: Ruslan Mitkov (2003). The Oxford Handbook of Computational Linguistics. Oxford University Press. p. 754.
 [^2]: "Markdown". 2013-12-04. Archived from the original on 2004-04-02
