@@ -59,13 +59,14 @@ knitr::opts_chunk$set(echo = T)
 
 <div style="text-align: justify">Finalmente, se hace una mención honrrosa del siguiente blog: [Daring Fireball](https://daringfireball.net/projects/markdown/syntax) que pertenece John Gruber autor de `Markdown`.
 
-# SOBRE EE.UU  
+# ESTADOS UNIDOS
+
+## DESCRIPCIÓN
 
 <div style="text-align: justify">Es la economía nacional más grande del mundo en términos nominales, con un PIB estimado en 15,7 billones de dólares (una cuarta parte del PIB global nominal) y una quinta parte del PIB global en paridad de poder adquisitivo. El país es la principal fuerza capitalista del planeta, además de ser líder en la investigación científica y la innovación tecnológica desde el siglo xix y, desde comienzos del siglo xx, el principal país industrial.[^3]
 
 <div style="text-align: justify">Para el desarrollo del presente trabajo se hará uso de información socio-demográfica de Estados Unidos tomados de la API [DATA Usa](https://datausa.io/) y otras fuentes anexas, como los archivos precargados de `state dataset` que almacena información de los 50 estados de Estados Unidos (EE.UU), como también la de información de coordenadas poligonales de `GADM, de raster`. 
 
-'# Finalmente se anexa información de las estaciones de la ciudad de los Ángeles, California, obtenida de la API [CityBik](http://api.citybik.es/).
 
 ### Mapa de EE.UU
 
@@ -128,6 +129,8 @@ map
 
 <div style="text-align: justify">El mapa previo resalta los 50 estados  y el distrito de Columbia del país en análisis, es decir Estados Unidos de América.
 
+## PANORAMA GENERAL
+
 <div style="text-align: justify">En términos generales podemos resumir lo siguiente respescto a EE.UU, la población total al 2017 es más de 325 millones, su área total en kilómetros cuadrados alcanza los 9.4 millones, la densidad promedio alcanza los 34.7 personas por kilómetro cuadrado, además de ingreso mediano por familia es al 2017 60 mil dólares al año, que representa 4.7% más que el año anterior, el estado con mayor población es California y el que tiene mayor densidad es New Jersey, mientras que los estados del Sur son los más poblados, los de Noreste tienen la mayor densidad promedio por kilómetro cuadrado. En los 5 años que representa la muestra tomada, no hay cambios significativos en los datos mostrados, se muestran algunos gráficos para apoyar lo que se describirá en los acápites más adelante. Por el ado de los ingresos, el Distrito de Columbia tiene el mayor ingreso mediano con más de 80 mil dólares al año, mientras en el otro extremo se tiene a West Virginia con poco más de 43 mil.
 
 ### Tabla N°1: Descriptivo de la Población por Zona
@@ -141,7 +144,8 @@ knitr::kable(tab_usa_total_div) %>%
 ```  
                                                                                                 
 <div style="text-align: justify">La tabla anterior muestra los estadísticos más relevantes acerca de la información tanto de densidad, área y población de EE.UU por zona geográfica (Noreste, Sur, Central-Norte y Este), entre los años 2013 y 2017. De esta primera vista, a nivel zona geográfica podemos resumir que, el Sur tiene mayor peso poblacional del total, con un 37% del total, mientras que el NorCentral es que tiene menor representatividad con un 21%. Existen diferencias sustanciales entre los valores medios y medianos de cada zona, lo cual indica que existe mucha polarización en la distribuciones de las poblaciones, esto se aplica en todas excepto NorCentral, igualmente esto no puede ser concluyente porque estamos hablando de 50 estados y en cada zona a lo mucho habrá 14 o 15 estados lo cual resulta una muestra pequeña para sacar conclusiones certeras, ergo de lo visto muestra diferencias sustanciales entre estados de la misma zona.
-                                                                                                
+
+## GRÁFICAS Y DESCRIPTIVOS                                                                                                
 ### Relación Densidad-Población, por Zona
                                                                                                 
 ```{r p, echo=FALSE, warning=FALSE, message=FALSE}
@@ -199,7 +203,43 @@ t<-ggplot(data=income_usa_tot, aes(`Household Income by Race`/1000)) +
 t
 ```
 
-<div style="text-align: justify">El gráfico de histogramas previo me muestra como fueron los ingresos medianos por hogar de cada estado de EE.UU en el periodo 2013 al 2017. En general tiene una distribución muy similar a una normal, recuédese que ha sido estandarizado para que se pueda mostrar en una misma escala (sumatoria del área del gráfico de densidad sea 1).
+<div style="text-align: justify">El gráfico de histogramas previo muestra como son los ingresos medianos por hogar de cada estado de EE.UU en el periodo 2013 al 2017. En general tiene una distribución muy similar a una normal, recuédese que ha sido estandarizado para que se pueda mostrar en una misma escala (sumatoria del área del gráfico de densidad sea 1).
+
+### Tabla N°2: Los Estados con más y menos ingresos medianos 
+
+```{r tabla_agrup,echo=FALSE, message=FALSE, warning=FALSE, fig.align="center"}
+url_inc<-"http://datausa.io/api/data?Geography=01000US:children&measure=Household Income by Race,Household Income by Race Moe&drilldowns=Race"
+income <- readLines(url_inc)
+income_usa <- jsonlite::fromJSON(income)[[1]]
+income_usa_tot<-income_usa[c(1:2,4:5,7:8)]
+tmp_names<-c("id_race","race","state","id_year","inc_median_house","moe_inc_med")
+colnames(income_usa_tot)<-tmp_names
+income_td<-income_usa_tot %>% arrange(desc(inc_median_house)) %>% filter(id_year==2017, race=="Total", state!="Puerto Rico")
+income_td<-income_td[c(1:5,47:51),3:6]
+
+knitr::kable(income_td) %>%
+  kable_styling() %>%
+  row_spec(seq(1,10,by=9), bold = F, color = "white", background = "red") %>% 
+  scroll_box(width = "100%", height = "250px")
+```  
+
+<div style="text-align: justify">Se puede determinar que, existe diferencias sustanciales entre los ingresos del primero y el último, siendo el más alto cerca del doble que el menor, esto está asociado al tipo de trabajos que tienen y el costo de vida propiamente de cada zona, vale aclarar lo que se está analizando son ingresos nominales, es muy probable que las canastas básicas en cada estado el costo promedio sea diferente y siendo así esas diferencias podrían disminuirse en términos relativos respecto al ingreso.
+
+### Ingresos promedio por Ascendencia
+
+```{r bar, echo=FALSE, warning=FALSE, message=FALSE, fig.align="center"}
+
+income_agrup<-income_usa_tot %>%filter(id_year==2017) %>%  group_by(race, id_year) %>% summarise(income_mean=mean(inc_median_house)) %>% 
+  arrange(desc(id_year),desc(income_mean))%>% ungroup()
+
+ggplot(data=income_agrup, aes(x=reorder(race,-income_mean), y=income_mean/1000)) +
+    geom_bar(stat="identity")+
+  theme (axis.text.x = element_text(angle=90))+
+    labs(x="Linaje",
+       y="Ingreso en miles de dólares")
+```
+
+<div style="text-align: justify">Otros datos interesantes a mencionar son que, en promedio los de procedencia asiática ganan más cualquiera otro tipo de linaje en EE.UU, los que ganan menos en promedio resultan ser los de casta negra, seguidos por los de ascendencia nativa americana.
 
 [^1]: Ruslan Mitkov (2003). The Oxford Handbook of Computational Linguistics. Oxford University Press. p. 754.
 [^2]: "Markdown". 2013-12-04. Archived from the original on 2004-04-02
