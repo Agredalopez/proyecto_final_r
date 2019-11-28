@@ -6,9 +6,8 @@ output:
   rmdformats::readthedown:
     highlight: tango
     self_contained: true
-    code_folding: show
-    thumbnails: true
     gallery: true
+    code_folding: show
     lightbox : true 
     se_bookdown : true
     df_print: kable
@@ -61,13 +60,21 @@ knitr::opts_chunk$set(echo = T)
 
 # SOBRE EE.UU  
 
-<div style="text-align: justify">Para el desarrollo del presente trabajo se hará uso de información socio-demográfica de Estados Unidos tomados de la API [DATA Usa](https://datausa.io/) y otras fuentes anexas, como los archivos precargados de `state dataset` que almacena información de los 50 estados de Estados Unidos (EE.UU), como también la de información de coordenadas poligonales de `GADM, de raster`. Finalmente se anexa información de las estaciones de la ciudad de los Ángeles, California, obtenida de la API [CityBik](http://api.citybik.es/).
+<div style="text-align: justify">Es la economía nacional más grande del mundo en términos nominales, con un PIB estimado en 15,7 billones de dólares (una cuarta parte del PIB global nominal) y una quinta parte del PIB global en paridad de poder adquisitivo. El país es la principal fuerza capitalista del planeta, además de ser líder en la investigación científica y la innovación tecnológica desde el siglo xix y, desde comienzos del siglo xx, el principal país industrial.[^3]
 
-## EE.UU en el Mundo  
+<div style="text-align: justify">Para el desarrollo del presente trabajo se hará uso de información socio-demográfica de Estados Unidos tomados de la API [DATA Usa](https://datausa.io/) y otras fuentes anexas, como los archivos precargados de `state dataset` que almacena información de los 50 estados de Estados Unidos (EE.UU), como también la de información de coordenadas poligonales de `GADM, de raster`. 
+
+'# Finalmente se anexa información de las estaciones de la ciudad de los Ángeles, California, obtenida de la API [CityBik](http://api.citybik.es/).
 
 ### Mapa de EE.UU
 
+
 ```{r map, echo=FALSE, warning=FALSE, message=FALSE}
+url_inc<-"http://datausa.io/api/data?Geography=01000US:children&measure=Household Income by Race,Household Income by Race Moe&drilldowns=Race"
+income <- readLines(url_inc)
+income_usa <- jsonlite::fromJSON(income)[[1]]
+income_usa_tot<-income_usa[c(2,4:5,7:8)]
+
 url<-"https://datausa.io/api/data?drilldowns=State&measures=Population"
 usa <- readLines(url)
 tab_popusa <- jsonlite::fromJSON(usa)[[1]]
@@ -90,9 +97,15 @@ tab_usa_total_div<-tab_usa_total %>%
   mutate(densi_agg=pop_agg/area_agg,percent=pop_agg/sum(pop_agg)) %>% 
   ungroup() %>% 
   arrange(year_id,desc(densi_agg))
+tab_2017<- tab_usa_total %>% filter(year_id==2017) %>% dplyr::select(state,density)
+columbia<-c("District of Columbia",3977)
+tab_2017<-rbind(tab_2017,columbia)
+tab_2017<-tab_2017[order(tab_2017$state),]
 usa <- getData("GADM", country="USA", level=1) 
-polygon_popup <- paste0("<strong>Name: </strong>", usa$NAME_1, "<br>")
-usa$randomData <- rnorm(n=nrow(usa), 150, 30)
+usa$density<-as.numeric(as.character(tab_2017$density))
+polygon_popup <- paste0("<strong>Name: </strong>", usa$NAME_1, "<br>",
+                        "<strong>Densidad: </strong>", round(usa$density,2),"<br>")
+
 pal <- colorQuantile("Greens", NULL, n = 5)
 
 map = leaflet() %>% 
@@ -100,20 +113,21 @@ map = leaflet() %>%
   setView(-98.35, 39.7,
           zoom = 2) %>% 
   addPolygons(data = usa, 
-              fillColor= ~pal(randomData),
+              fillColor= ~pal(density),
               fillOpacity = 0.4, 
               weight = 2, 
               color = "green",
               popup = polygon_popup)%>% 
-addControl("Estados Unidos",position = "topright",className = "map-title") %>% 
-addMarkers(lng = -98.35, lat=39.7)
+  addControl("Estados Unidos",position = "topright",className = "map-title") %>% 
+  addMarkers(lng = -98.35, lat=39.7)
 
 map
 
 ```  
 
-<div style="text-align: justify">El mapa previo resalta los 50 estados  y el distrito de California del país en análisis, es decir Estados Unidos de América.
-                                                                                                
+<div style="text-align: justify">El mapa previo resalta los 50 estados  y el distrito de Columbia del país en análisis, es decir Estados Unidos de América.
+
+<div style="text-align: justify">En términos generales podemos resumir lo siguiente respescto a EE.UU, la población total al 2017 es más de 325 millones, su área total en kilómetros cuadrados alcanza los 9.4 millones, la densidad promedio alcanza los 34.7 personas por kilómetro cuadrado, además de ingreso mediano por familia es al 2017 60 mil dólares al año, que representa 4.7% más que el año anterior, el estado con mayor población es California y el que tiene mayor densidad es New Jersey, mientras que los estados del Sur son los más poblados, los de Noreste tienen la mayor densidad promedio por kilómetro cuadrado. En los 5 años que representa la muestra tomada, no hay cambios significativos en los datos mostrados, se muestran algunos gráficos para apoyar lo que se describirá en los acápites más adelante. Por el ado de los ingresos, el Distrito de Columbia tiene el mayor ingreso mediano con más de 80 mil dólares al año, mientras en el otro extremo se tiene a West Virginia con poco más de 43 mil.
 
 ### Tabla N°1: Descriptivo de la Población por Zona
 
@@ -125,27 +139,25 @@ knitr::kable(tab_usa_total_div) %>%
   scroll_box(width = "100%", height = "250px")
 ```  
                                                                                                 
-<div style="text-align: justify">La tabla anterior muestra los estadísticos más relevantes acerca de la información tanto de densidad, área y población de EE.UU por zona geográfica (Noreste, Sur, Central-Norte y Este), entre los años 2013 y 2017.
+<div style="text-align: justify">La tabla anterior muestra los estadísticos más relevantes acerca de la información tanto de densidad, área y población de EE.UU por zona geográfica (Noreste, Sur, Central-Norte y Este), entre los años 2013 y 2017. De esta primera vista, a nivel zona geográfica podemos resumir que, el Sur tiene mayor peso poblacional del total, con un 37% del total, mientras que el NorCentral es que tiene menor representatividad con un 21%. Existen diferencias sustanciales entre los valores medios y medianos de cada zona, lo cual indica que existe mucha polarización en la distribuciones de las poblaciones, esto se aplica en todas excepto NorCentral, igualmente esto no puede ser concluyente porque estamos hablando de 50 estados y en cada zona a lo mucho habrá 14 o 15 estados lo cual resulta una muestra pequeña para sacar conclusiones certeras, ergo de lo visto muestra diferencias sustanciales entre estados de la misma zona.
                                                                                                 
 ### Relación Densidad-Población, por Zona
                                                                                                 
-```{r q, echo=FALSE, warning=FALSE, message=FALSE}
+```{r p, echo=FALSE, warning=FALSE, message=FALSE}
 tab_2017<-(tab_usa_total) %>% filter(year_id==2017) %>% mutate(density=round(density,2))
-q <- plot_ly(tab_2017,x = ~pop, y = ~density,
+p <- plot_ly(tab_2017,x = ~pop, y = ~density,
              text = ~paste("Estado: ", state, '<br>Densidad:', density),
              color = ~division, colors="Dark2", size = ~density) %>% 
     layout(
          xaxis = list(title = "Población"),
          yaxis = list(title = "Densidad por Km2")) 
-q
+p
 ```
 
 <div style="text-align: justify">Del gráfico anterior podemos sacar algunos datos interesantes (con base al último año disponible, 2017), como por ejemplo que si bien California es el estado con mayor población, su densidad poblacional por kilómetro cuadrado es de 39, poco más del promedio de EE.UU que está alrededor del 33 personas. En el otro extremo tenemos que New Jersey tiene la mayor densidad por kilómetro cuadrado de más de 440 personas, y con una población de 9 millones, adicionalmente se muestra que en general los estados del Noreste tienen una densidad promedio por encima del resto de zonas, visiblemente se pueden apreciar: Massachusetts, Rhode Island y Connecticut, todos por encima del 200 por kilómetro cuadrado.
 
-### Densidad Poblacional por Zona, vista histórica
-
-```{r p, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center',fig.width=8, fig.height=4}
-p<-ggplot(data = tab_usa_total) +
+```{r q, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center',fig.width=8, fig.height=4}
+q<-ggplot(data = tab_usa_total) +
   geom_point(mapping = aes(x = pop/1000  , y = density, color=division)) +
   theme (axis.text.x = element_text(angle=90)) +
   facet_wrap(year_id~.)+
@@ -153,12 +165,11 @@ p<-ggplot(data = tab_usa_total) +
   labs(x="Población en miles",
        y="Densidad por km2")
 
-
 ``` 
 
 ### Dispersión de la densidad Zona, vista histórica
 
-```{r s, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center',fig.width=8, fig.height=4}
+```{r s, echo=FALSE, warning=FALSE, message=FALSE, fig.align="center"}
 
 
 s<-ggplot(data = tab_usa_total) +
@@ -166,13 +177,29 @@ s<-ggplot(data = tab_usa_total) +
   theme (axis.text.x = element_text(angle=90)) +
   facet_wrap(region~.)+
   scale_color_brewer(palette = "Dark2")+
-  labs(x="Población en miles",
+  labs(x="Año",
        y="Densidad por km2")
- 
-s
+s 
 ```
                                                                                                 
-<div style="text-align: justify">los gráficos previos buscan dar a conocer que en los 5 años de muestra la situación ha sido muy similar en niveles de densidad, eso es entendible porque las poblaciones no cambian abruptamente en un periodo de tiempo tan corto, asimismo nos indica que la dispersión de la zona Noreste, si bien tiene la densidad más alta en términos promedios, existe mucha dispersión los estados que los conforman, de hecho está conformada por dos regiones que tienen comportamientos muy similares, tanto Midle Atlantic como New Englad están bastante polarizadas pero en torno a diferente media, es decir tienen un grupo de estados con densidad alta y otro con niveles bajo, no se encuentran valores cercanos a la media, esto hace que la varianza sea más alta incluso.
+<div style="text-align: justify">El gráfico previo busca darnos a entender que en los 5 años de muestra la situación ha sido muy similar en niveles de densidad, eso es entendible porque las poblaciones no cambian abruptamente en un periodo de tiempo tan corto, asimismo nos indica que la dispersión de la zona Noreste, si bien tiene la densidad más alta en términos promedios, existe mucha dispersión los estados que los conforman, de hecho está conformada por dos regiones que tienen comportamientos muy similares, tanto Midle Atlantic como New Englad están bastante polarizadas pero en torno a diferente media, es decir tienen un grupo de estados con densidad alta y otro con niveles bajo, no se encuentran valores cercanos a la media, esto hace que la varianza sea más alta incluso.
+
+### Distribución de Ingresos de los Estados por año
+
+```{r inc, echo=FALSE, message=FALSE, warning=FALSE}
+t<-ggplot(data=income_usa_tot, aes(`Household Income by Race`/1000)) + 
+  geom_histogram(aes(y =..density..), 
+                 col="blue", 
+                 fill="green", 
+                 alpha = .2) + 
+  geom_density(col=1) + 
+  labs(x="Ingresos en miles", y="Densidad")+
+  facet_wrap(`ID Year`~.)
+t
+```
+
+<div style="text-align: justify">El gráfico de histogramas previo me muestra como fueron los ingresos medianos por hogar de cada estado de EE.UU en el periodo 2013 al 2017. En general tiene una distribución muy similar a una normal, recuédese que ha sido estandarizado para que se pueda mostrar en una misma escala (sumatoria del área del gráfico de densidad sea 1).
 
 [^1]: Ruslan Mitkov (2003). The Oxford Handbook of Computational Linguistics. Oxford University Press. p. 754.
 [^2]: "Markdown". 2013-12-04. Archived from the original on 2004-04-02
+[^3]: International Monetary Fund (2018). «United States». IMF.org (en inglés)
