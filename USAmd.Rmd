@@ -9,7 +9,7 @@ output:
     code_folding: show
     thumbnails: true
     gallery: true
-    fig_width: 12
+    fig_width: 10
     fig_height: 5
     lightbox : true 
     se_bookdown : true
@@ -23,6 +23,7 @@ library(dplyr)
 library(ggplot2)
 library(rbokeh)
 library(leaflet)
+library(plotly)
 library(RColorBrewer)
 library(raster)
 library(kableExtra)
@@ -32,24 +33,37 @@ library(kableExtra)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Tutoriales 
+# TUTORIAL  
 
-## REGEX
+## REGEX  
 
 <div style="text-align: justify">Una expresión regular, regex o regexp (a veces llamada expresión racional) es una secuencia de caracteres que definen un patrón de búsqueda. Por lo general, dichos patrones son utilizados por los algoritmos de búsqueda de cadenas para las operaciones "buscar" o "buscar y reemplazar" en las cadenas, o para la validación de entrada. Es una técnica desarrollada en informática teórica y teoría del lenguaje formal.
 
-El concepto surgió en la década de 1950 cuando el matemático estadounidense Stephen Cole Kleene formalizó la descripción de un lenguaje regular. El concepto entró en uso común con las utilidades de procesamiento de texto de Unix. Existen diferentes sintaxis para escribir expresiones regulares desde la década de 1980, una es el estándar POSIX y otra, ampliamente utilizada, la sintaxis de Perl.[^1]<div/>
+<div style="text-align: justify">El concepto surgió en la década de 1950 cuando el matemático estadounidense Stephen Cole Kleene formalizó la descripción de un lenguaje regular. El concepto entró en uso común con las utilidades de procesamiento de texto de Unix. Existen diferentes sintaxis para escribir expresiones regulares desde la década de 1980, una es el estándar POSIX y otra, ampliamente utilizada, la sintaxis de Perl.[^1]                                 
+                                                                                                
+<div style="text-align: justify">De lo navegado y encontrado, se puede citar incluso algunos vídeos bastante densos en términos de entendimiento profundo de lo que son las expresiones regulares, se pretende dar a conocer la preferencia en función a dos criterios: practicidad y detalle en explicación.                                                          
+                                                                                                
+## MARKDOWN  
 
-## MARKDOWN
-<div style="text-align: justify">Markdown es un lenguaje de marcado ligero con sintaxis de formato de texto sin formato. Su diseño le permite convertirse a muchos formatos de salida, pero la herramienta original con el mismo nombre solo admite HTML. Markdown se usa a menudo para formatear archivos Léame, para escribir mensajes en foros de discusión en línea y para crear texto enriquecido utilizando un editor de texto sin formato.
+<div style="text-align: justify">Markdown es un lenguaje de marcado ligero con sintaxis de formato de texto sin formato. Su diseño le permite convertirse a muchos formatos de salida, pero la herramienta original con el mismo nombre solo admite HTML. Markdown se usa a menudo para formatear archivos `Readme`, para escribir mensajes en foros de discusión en línea y para crear texto enriquecido utilizando un editor de texto sin formato.
+                                                                                                
+<div style="text-align: justify">Para remarcar que, la descripción inicial de Markdown contenía ambigüedades y preguntas sin respuesta, las implementaciones que aparecieron a lo largo de los años tienen diferencias sutiles y muchas vienen con extensiones de sintaxis.[^2]
 
-Dado que la descripción inicial de Markdown contenía ambigüedades y preguntas sin respuesta, las implementaciones que aparecieron a lo largo de los años tienen diferencias sutiles y muchas vienen con extensiones de sintaxis.[^2]<div/>
+<div style="text-align: justify">Abordando propiamente la finalidad del presente apartado se menciona que la opinión respecto a qué página es mejor o peor en términos de apoyo a un iniciado o entusiasta curioso de nuevos conocimientos, se indica que el criterio de selección está alineado únicamente a `Markdown`, es decir que queda de lado de análisis `RMarkdown`, que si bien es un formato en el cual también es posible de desarrollar la intención es tener claridad de lo que consiste este tipo de lenguaje a sentido general y no de manera explícita en alguna aplicación particular.
 
-# Sobre Estados Unidos
+<div style="text-align: justify">Dicho lo anterior, se remarca como la peor página de las revisadas, que sirven o buscan servir de apoyo, a la llamada [MarkDown Tutorial](https://www.markdowntutorial.com/es/lesson/1/), la razón es principalmente, porque a pesar de que tiene una intención de que aprendas con la práctica (dentro de sus apartados tiene ejercicios), resulta siendo extremandamente básica y hasta cierto punto aburrida, de ahí que los ejercicios te resulten sosos de hacer.
 
-<div style="text-align: justify">Para el desarrollo del presente trabajo se hará uso de información socio-demográfica de Estados Unidos tomados de la API [DATA Usa](https://datausa.io/) y otras fuentes anexas, como los archivos precargados de `state dataset` que almacena información de los 50 estados de Estados Unidos (EE.UU), como también la de información de coordenadas poligonales de `GADM, de raster`. Finalmente se anexa información de las estaciones de la ciudad de los Ángeles, California, obtenida de la API [CityBik](http://api.citybik.es/).<div/>
+<div style="text-align: justify">En el otro extremo, tenemos a la mejor (bajo el criterio del autor), es un blog que tiene el nombre de [Joe Di Castro](https://joedicastro.com/pages/markdown.html), lo que me resultó relavante para definir como la más idónea para poder aprender o hacer consultas rápidas de `Markdown`, fue que tiene un índice general que me llevan al punto que le indique, esto me permite dirigirme directamente a lo que necesito consultar y/o aprender. Adicional a ello, es que no solo me menciona un ejemplo sino presenta opciones alternas, lo cual le da un valor agregado que no encontré en otras páginas.
 
-## EE.UU en el Mundo
+<div style="text-align: justify">Finalmente, se hace una mención honrrosa del siguiente blog: [Daring Fireball](https://daringfireball.net/projects/markdown/syntax) que pertenece John Gruber autor de `Markdown`.
+
+# SOBRE EE.UU  
+
+<div style="text-align: justify">Para el desarrollo del presente trabajo se hará uso de información socio-demográfica de Estados Unidos tomados de la API [DATA Usa](https://datausa.io/) y otras fuentes anexas, como los archivos precargados de `state dataset` que almacena información de los 50 estados de Estados Unidos (EE.UU), como también la de información de coordenadas poligonales de `GADM, de raster`. Finalmente se anexa información de las estaciones de la ciudad de los Ángeles, California, obtenida de la API [CityBik](http://api.citybik.es/).
+
+## EE.UU en el Mundo  
+
+### Mapa de EE.UU
 
 ```{r map, echo=FALSE, warning=FALSE, message=FALSE}
 url<-"https://datausa.io/api/data?drilldowns=State&measures=Population"
@@ -89,32 +103,51 @@ map = leaflet() %>%
               weight = 2, 
               color = "green",
               popup = polygon_popup)%>% 
-addControl("Estados Unidos",position = "topleft",className = "map-title") %>% 
+addControl("Estados Unidos",position = "topright",className = "map-title") %>% 
 addMarkers(lng = -98.35, lat=39.7)
 
 map
 
-```
+```  
 
+<div style="text-align: justify">El mapa previo resalta los 50 estados  y el distrito de California del país en análisis, es decir Estados Unidos de América.
+                                                                                                
+
+### Tabla N°1: Descriptivo de la Población por Zona
 
 ```{r tabla_div,echo=FALSE, fig.align="center"}
-knitr::kable(tab_usa_total_div, caption = "**Tabla N° 1: Países e Indicadores**") %>%
+
+knitr::kable(tab_usa_total_div) %>%
   kable_styling() %>%
-  row_spec(seq(1,20,by=4), bold = T, color = "white", background = "red") %>% 
-  scroll_box(width = "100%", height = "200px")
-  
-
+  row_spec(seq(1,20,by=4), bold = F, color = "white", background = "red") %>% 
+  scroll_box(width = "100%", height = "250px")
+```  
+                                                                                                
+<div style="text-align: justify">La tabla anterior muestra los estadísticos más relevantes acerca de la información tanto de densidad, área y población de EE.UU por zona geográfica (Noreste, Sur, Central-Norte y Este), entre los años 2013 y 2017.
+                                                                                                
+### Densidad Poblacional por Región
+                                                                                                
+```{r p, echo=FALSE, warning=FALSE, message=FALSE, fig.align='center'}
+p<-ggplot(data = tab_usa_total) +
+  geom_point(mapping = aes(x = region, y = density, color=division)) +
+  theme (axis.text.x = element_text(angle=90)) +
+  facet_wrap(year_id~.)+
+  scale_color_brewer(palette = "Dark2")
+p
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+                                                                                                
+### Densidad-Población - Por Zona
+                                                                                                
+```{r q, echo=FALSE, warning=FALSE, message=FALSE}
+tab_2017<-(tab_usa_total) %>% filter(year_id==2017) %>% mutate(density=round(density,2))
+q <- plot_ly(tab_2017,x = ~pop, y = ~density,
+             text = ~paste("Estado: ", state, '<br>Densidad:', density),
+             color = ~division, colors="Dark2", size = ~density) %>% 
+    layout(
+         xaxis = list(title = "Población"),
+         yaxis = list(title = "Densidad")) 
+q
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
+                                                                                                
 [^1]: Ruslan Mitkov (2003). The Oxford Handbook of Computational Linguistics. Oxford University Press. p. 754.
 [^2]: "Markdown". 2013-12-04. Archived from the original on 2004-04-02
